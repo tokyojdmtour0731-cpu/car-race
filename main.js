@@ -104,6 +104,7 @@
   const marks = [];
   const padPrev = {};
   const lap = { running: false, start: 0, cp: 1, valid: true, last: 0, best: 0, prevI: 0, n: 0, msg: "", msgUntil: 0 };
+  window.RaceState = { car: car, lap: lap };
   let offState = 0;
   try { lap.best = parseFloat(localStorage.getItem("carrace_best_c2")) || 0; } catch (e) { lap.best = 0; }
 
@@ -290,6 +291,7 @@
    ctx.moveTo(lx[0], ly[0]);
    ctx.lineTo(rx[0], ry[0]);
    ctx.stroke();
+   if (window.GhostDraw) window.GhostDraw(ctx);
  }
 
  function drawMap(W) {
