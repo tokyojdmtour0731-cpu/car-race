@@ -94,7 +94,7 @@
    }
    return { maxG: maxG, lostAt: lostAt, lostSpeed: lostSpeed };
  }
-
+function kbCircle(ov, assist, kmh) { const R0 = 100; const car = newCar(false, ov); const v0 = kmh / KMH; car.vx = v0; car.gear = 3; for (let i = 0; i < 4; i++) car.omega[i] = v0 / car.p.wheelR; const inp = { throttle: 0, brake: 0, steer: 0 }; let maxE = 0; let lost = 40; let kst = 0; let next = 0; const n = Math.round(40 / P.DT); for (let k = 0; k < n; k++) { const t = car.time; const dx = car.x; const dy = car.y - R0; const e = Math.hypot(dx, dy) - R0; const ePsi = wrapPi(Math.atan2(dy, dx) + Math.PI / 2 - car.psi); const del = Math.atan(car.p.wheelbase / R0) + 0.02 * e + 0.6 * ePsi; const vx = Math.max(0, car.vx); const sm = P.steerMax(car.p, vx); const lim = assist ? Math.min(1, (0.045 + 27.5 / (car.vx * car.vx + 25)) / sm) : 1; if (t >= next) { next = t + 0.1; if (del - car.steer > 0.01) kst = 1; else if (car.steer - del > 0.01) kst = -1; else kst = 0; } const rate = (kst !== 0 ? 3.0 / (1 + vx / 30) : 5) * P.DT; const tg = kst * lim; const d = tg - inp.steer; inp.steer = Math.abs(d) <= rate ? tg : inp.steer + Math.sign(d) * rate; const ev = v0 - car.vx; inp.throttle = P.clamp(0.25 + 0.5 * ev, 0, 1); inp.brake = P.clamp(-0.3 * ev, 0, 1); P.step(car, inp, P.DT); if (t > 3) maxE = Math.max(maxE, Math.abs(e)); if (Math.abs(e) > 6) { lost = car.time; break; } } return { maxE: maxE, lost: lost }; }
  function testIdle() {
    const car = newCar(false);
    for (let i = 0; i < 5 * 240; i++) P.step(car, { throttle: 0, brake: 0, steer: 0 }, P.DT);
@@ -122,6 +122,7 @@
    const gc = root.GarageCars || [];
    for (let ci = 1; ci < gc.length; ci++) { add("Car " + ci + " " + gc[ci].name + " 100-0 braking (ABS on)", brakeRun(true, gc[ci]), "m", 30, 48); add("Car " + ci + " 100-0 braking (ABS off, info)", brakeRun(false, gc[ci]), "m", 30, 70); }
    for (let cj = 1; cj < gc.length; cj++) { const ac = testAccel(gc[cj]); const tp = testTopSpeed(gc[cj]); const sk = testSkidpad(gc[cj]); add("Car " + cj + " 0-100 km/h", ac.t100, "s", 3, 9); add("Car " + cj + " 0-200 km/h", ac.t200, "s", 8, 40); add("Car " + cj + " top speed", tp.vmax, "km/h", 180, 320); add("Car " + cj + " max lateral G", sk.maxG, "g", 0.8, 1.4); add("Car " + cj + " skidpad limit speed", sk.lostSpeed, "km/h", 40, 130); }
+   for (let kk = 0; kk < 3; kk++) { const sp2 = [60, 80, 100][kk]; const on = kbCircle(null, true, sp2); const off = kbCircle(null, false, sp2); add("Keyboard driver R=100m " + sp2 + "km/h assist ON max offset", on.maxE, "m", 0, 6); add("Keyboard driver R=100m " + sp2 + "km/h assist ON seconds on road", on.lost, "s", 40, 40); add("Keyboard driver R=100m " + sp2 + "km/h assist OFF max offset (info)", off.maxE, "m", 0, 100); add("Keyboard driver R=100m " + sp2 + "km/h assist OFF seconds on road (info)", off.lost, "s", 0, 100); }
    return out;
  }
 
