@@ -155,6 +155,29 @@
         }
       }
     }
+    const gpz = window.GhostPos;
+    if (gpz && (gpz.x - camx) * cps + (gpz.y - camy) * sps > 2) {
+      const gcs = Math.cos(gpz.psi);
+      const gsn = Math.sin(gpz.psi);
+      const gw = function (x, y, z) { return proj(gpz.x + gcs * x - gsn * y, gpz.y + gsn * x + gcs * y, z); };
+      const gq = function (a, c) {
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.moveTo(a[0][0], a[0][1]);
+        for (let q = 1; q < a.length; q++) ctx.lineTo(a[q][0], a[q][1]);
+        ctx.closePath();
+        ctx.fill();
+      };
+      const gxr = -car.b - 0.9;
+      const gxf = car.a + 0.85;
+      ctx.globalAlpha = 0.7;
+      gq([gw(gxr, 0.9, 0.25), gw(gxf, 0.9, 0.25), gw(gxf, 0.9, 0.95), gw(gxr, 0.9, 0.95)], "#d9b300");
+      gq([gw(gxr, -0.9, 0.25), gw(gxf, -0.9, 0.25), gw(gxf, -0.9, 0.95), gw(gxr, -0.9, 0.95)], "#d9b300");
+      gq([gw(gxr, 0.9, 0.95), gw(gxf, 0.9, 0.95), gw(gxf, -0.9, 0.95), gw(gxr, -0.9, 0.95)], "#ffd23f");
+      gq([gw(gxr + 1.0, 0.75, 1.35), gw(gxr + 2.9, 0.75, 1.35), gw(gxr + 2.9, -0.75, 1.35), gw(gxr + 1.0, -0.75, 1.35)], "#ffe27a");
+      gq([gw(gxr, 0.9, 0.25), gw(gxr, -0.9, 0.25), gw(gxr, -0.9, 0.95), gw(gxr, 0.9, 0.95)], "#c9a000");
+      ctx.globalAlpha = 1;
+    }
     if (chase) {
       const cw = function (x, y, z) { return proj(car.x + cps * x - sps * y, car.y + sps * x + cps * y, z); };
       const poly = function (a, c) {
@@ -182,7 +205,7 @@
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.font = Math.round(H * 0.018) + "px monospace";
     ctx.textAlign = "right";
-    ctx.fillText("B: VIEW (" + ["TOP", "COCKPIT", "CHASE"][CV.mode] + ")", W - 12, H - 70);
+    ctx.fillText("B: VIEW (" + ["TOP", "COCKPIT", "CHASE"][CV.mode] + ")", W - 12, H * 0.9);
     ctx.textAlign = "left";
   };
   function dial(ctx, cx, cy, r, v, vmax, red) {
