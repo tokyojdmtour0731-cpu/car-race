@@ -150,6 +150,7 @@
        if (lap.valid) {
          lap.last = t;
          lap.n++;
+         window.dispatchEvent(new CustomEvent("carrace:lap", { detail: { time: t } }));
          if (lap.best === 0 || t < lap.best) {
            lap.best = t;
            try { localStorage.setItem("carrace_best_c2", String(t)); } catch (e) { }
