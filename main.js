@@ -118,7 +118,7 @@
 
  function reset() {
    trk.i = 0;
-   P.resetCar(car, tx[0], ty[0], th[0]);
+   P.resetCar(car, tx[0], ty[0], th[0]); car.rev = false;
    inp.throttle = 0;
    inp.brake = 0;
    inp.steer = 0;
@@ -176,7 +176,7 @@
    if (e.code.indexOf("Arrow") === 0 || e.code === "Space") e.preventDefault();
  });
   window.addEventListener("keyup", function (e) { keys[e.code] = false; });
-let assist = true;
+let assist = true; let revT = 0;
  function onPress(code) {
    if (code === "KeyE") P.shift(car, 1);
    if (code === "KeyQ") P.shift(car, -1);
@@ -197,8 +197,8 @@ let assist = true;
    const kThr = (keys.KeyW || keys.ArrowUp) ? 1 : 0;
    const kBrk = (keys.KeyS || keys.ArrowDown) ? 1 : 0;
    const kSt = ((keys.KeyA || keys.ArrowLeft) ? 1 : 0) - ((keys.KeyD || keys.ArrowRight) ? 1 : 0);
-   inp.throttle = approach(inp.throttle, kThr, kThr ? 4 : 8, dt);
-   inp.brake = approach(inp.brake, kBrk, kBrk ? 5 : 10, dt);
+   if (!car.rev) { if (kBrk && !kThr && car.vx < 0.5) revT += dt; else revT = 0; if (revT > 0.35) { car.rev = true; car.gear = 1; revT = 0; } } else { if (kThr && !kBrk && car.vx > -0.5) revT += dt; else revT = 0; if (revT > 0.35) { car.rev = false; revT = 0; } } const tT = car.rev ? kBrk : kThr; const tB = car.rev ? kThr : kBrk; inp.throttle = approach(inp.throttle, tT, tT ? 4 : 8, dt);
+   inp.brake = approach(inp.brake, tB, tB ? 5 : 10, dt);
    const sr = 3.0 / (1 + Math.max(0, car.vx) / 30);
    const lim = assist ? Math.min(1, (0.045 + 27.5 / (car.vx * car.vx + 25)) / P.steerMax(car.p, Math.max(0, car.vx))) : 1;
    inp.steer = approach(inp.steer, kSt * lim, kSt !== 0 ? sr : 5, dt);
@@ -362,18 +362,18 @@ let assist = true;
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
    drawMap(W);
-   const kmh = Math.max(0, car.vx) * 3.6;
+   const kmh = Math.abs(car.vx) * 3.6;
    const bar = function (v) { const n = Math.round(P.clamp(v, 0, 1) * 10); return "#".repeat(n) + "-".repeat(10 - n); };
    const lapNow = lap.running ? car.time - lap.start : 0;
    hud.textContent =
      "SPEED " + kmh.toFixed(0) + " km/h\n" +
-     "GEAR " + car.gear + (car.auto ? " (auto)" : " (manual)") + " RPM " + car.rpm.toFixed(0) + "\n" +
+     "GEAR " + (car.rev ? "R" : car.gear) + (car.auto ? " (auto)" : " (manual)") + " RPM " + car.rpm.toFixed(0) + "\n" +
      "THR [" + bar(inp.throttle) + "] BRK [" + bar(inp.brake) + "]\n" +
      "STEER " + (car.steer * 57.3).toFixed(1) + " deg\n" +
      "G lat " + car.gLat.toFixed(2) + " long " + car.gLong.toFixed(2) + "\n" +
      "slip FL " + car.kap[0].toFixed(2) + "/" + (car.alp[0] * 57.3).toFixed(1) + " FR " + car.kap[1].toFixed(2) + "/" + (car.alp[1] * 57.3).toFixed(1) + "\n" +
      "slip RL " + car.kap[2].toFixed(2) + "/" + (car.alp[2] * 57.3).toFixed(1) + " RR " + car.kap[3].toFixed(2) + "/" + (car.alp[3] * 57.3).toFixed(1) + "\n" +
-     "ABS " + (car.abs ? "ON" : "OFF") + " TC " + (car.tc ? "ON" : "OFF") + " STEER-ASSIST(3) " + (assist ? "ON" : "OFF") + "\n" +
+     "ABS " + (car.abs ? "ON" : "OFF") + " TC " + (car.tc ? "ON" : "OFF") + " STEER-ASSIST(3) " + (assist ? "ON" : "OFF") + " (stopped: hold S = reverse)\n" +
      "LAP " + (lap.n + 1) + "  " + fmt(lapNow) + (lap.valid ? "" : "  INVALID") + "\n" +
      "LAST " + fmt(lap.last) + "  BEST " + fmt(lap.best) + "\n" +
      "CP " + (lap.cp - 1) + "/3  POS " + (trk.i * DS).toFixed(0) + "/" + LEN.toFixed(0) + " m  OFFSET " + trk.d.toFixed(1) + " m  " + ["ON ROAD", "GRASS", "WALL"][offState] + "\n" +
