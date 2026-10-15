@@ -4,8 +4,8 @@
   const P = root.CarPhysics;
   const KMH = 3.6;
 
- function newCar(tc) {
-   const car = P.createCar(P.CAR_KAZE);
+ function newCar(tc, ov) {
+   const car = P.createCar(ov ? Object.assign({}, P.CAR_KAZE, ov) : P.CAR_KAZE);
    car.auto = true;
    car.abs = true;
    car.tc = !!tc;
@@ -44,8 +44,8 @@
    return { vmax: car.vx * KMH, dv10: (car.vx - vMark) * KMH };
  }
 
- function brakeRun(abs) {
-   const car = newCar(false);
+ function brakeRun(abs, ov) {
+   const car = newCar(false, ov);
    car.auto = false;
    car.gear = 4;
    car.abs = abs;
@@ -119,6 +119,8 @@
    add("Max lateral G (R=50 m circle)", sp.maxG, "g", 0.95, 1.25);
    add("Skidpad speed at loss of line (info)", sp.lostSpeed, "km/h", 50, 110);
    add("Standstill drift in 5 s", testIdle(), "m", 0, 0.05);
+   const gc = root.GarageCars || [];
+   for (let ci = 1; ci < gc.length; ci++) { add("Car " + ci + " " + gc[ci].name + " 100-0 braking (ABS on)", brakeRun(true, gc[ci]), "m", 30, 48); add("Car " + ci + " 100-0 braking (ABS off, info)", brakeRun(false, gc[ci]), "m", 30, 70); }
    return out;
  }
 
