@@ -176,7 +176,7 @@
    if (e.code.indexOf("Arrow") === 0 || e.code === "Space") e.preventDefault();
  });
   window.addEventListener("keyup", function (e) { keys[e.code] = false; });
-
+let assist = true;
  function onPress(code) {
    if (code === "KeyE") P.shift(car, 1);
    if (code === "KeyQ") P.shift(car, -1);
@@ -184,6 +184,7 @@
    if (code === "Digit1") car.abs = !car.abs;
    if (code === "Digit2") car.tc = !car.tc;
    if (code === "KeyR") reset();
+   if (code === "Digit3") assist = !assist;
  }
 
  function approach(v, target, rate, dt) {
@@ -198,8 +199,9 @@
    const kSt = ((keys.KeyA || keys.ArrowLeft) ? 1 : 0) - ((keys.KeyD || keys.ArrowRight) ? 1 : 0);
    inp.throttle = approach(inp.throttle, kThr, kThr ? 4 : 8, dt);
    inp.brake = approach(inp.brake, kBrk, kBrk ? 5 : 10, dt);
-   const sr = 2.5 / (1 + Math.max(0, car.vx) / 20);
-   inp.steer = approach(inp.steer, kSt, kSt !== 0 ? sr : 5, dt);
+   const sr = 3.0 / (1 + Math.max(0, car.vx) / 30);
+   const lim = assist ? Math.min(1, (0.045 + 27.5 / (car.vx * car.vx + 25)) / P.steerMax(car.p, Math.max(0, car.vx))) : 1;
+   inp.steer = approach(inp.steer, kSt * lim, kSt !== 0 ? sr : 5, dt);
 
   const pads = navigator.getGamepads ? navigator.getGamepads() : [];
    for (let n = 0; n < pads.length; n++) {
@@ -210,7 +212,7 @@
      const t = gp.buttons[7] ? gp.buttons[7].value : 0;
      const b = gp.buttons[6] ? gp.buttons[6].value : 0;
      if (st !== 0 || t > 0.02 || b > 0.02) {
-       inp.steer = -st;
+       inp.steer = -st * lim;
        inp.throttle = t;
        inp.brake = b;
      }
@@ -371,7 +373,7 @@
      "G lat " + car.gLat.toFixed(2) + " long " + car.gLong.toFixed(2) + "\n" +
      "slip FL " + car.kap[0].toFixed(2) + "/" + (car.alp[0] * 57.3).toFixed(1) + " FR " + car.kap[1].toFixed(2) + "/" + (car.alp[1] * 57.3).toFixed(1) + "\n" +
      "slip RL " + car.kap[2].toFixed(2) + "/" + (car.alp[2] * 57.3).toFixed(1) + " RR " + car.kap[3].toFixed(2) + "/" + (car.alp[3] * 57.3).toFixed(1) + "\n" +
-     "ABS " + (car.abs ? "ON" : "OFF") + " TC " + (car.tc ? "ON" : "OFF") + "\n" +
+     "ABS " + (car.abs ? "ON" : "OFF") + " TC " + (car.tc ? "ON" : "OFF") + " STEER-ASSIST(3) " + (assist ? "ON" : "OFF") + "\n" +
      "LAP " + (lap.n + 1) + "  " + fmt(lapNow) + (lap.valid ? "" : "  INVALID") + "\n" +
      "LAST " + fmt(lap.last) + "  BEST " + fmt(lap.best) + "\n" +
      "CP " + (lap.cp - 1) + "/3  POS " + (trk.i * DS).toFixed(0) + "/" + LEN.toFixed(0) + " m  OFFSET " + trk.d.toFixed(1) + " m  " + ["ON ROAD", "GRASS", "WALL"][offState] + "\n" +
