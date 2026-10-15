@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+  <html lang="ja">
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Car Race - Physics Prototype (Cycle 1)</title>
+  <style>
+  html,body{margin:0;height:100%;background:#0b0d12;color:#dfe6f0;font-family:ui-monospace,Menlo,Consolas,monospace;overflow:hidden}
+canvas{display:block;width:100vw;height:100vh}
+#hud{position:fixed;left:12px;top:10px;font-size:14px;line-height:1.5;text-shadow:0 0 4px #000;white-space:pre;pointer-events:none}
+  #help{position:fixed;right:12px;bottom:10px;font-size:12px;opacity:.75;text-align:right;white-space:pre}
+  #credit{position:fixed;left:12px;bottom:10px;font-size:11px;opacity:.6}
+  #results{position:fixed;inset:0;margin:0;padding:16px;background:#0b0d12;color:#9fe3b0;font-size:13px;overflow:auto;display:none;white-space:pre-wrap}
+  </style>
+  </head>
+  <body>
+  <canvas id="c"></canvas>
+  <div id="hud"></div>
+  <div id="help">W/S or Up/Down: throttle/brake  A/D or Left/Right: steer
+  Q/E: shift down/up  M: auto shift  1: ABS  2: TC  R: reset
+  Gamepad: stick steer, RT/LT pedals, bumpers shift
+?test=1 : run automatic measurements</div>
+<div id="credit">Fictional car &amp; prototype. Not affiliated with any real manufacturer.</div>
+  <pre id="results"></pre>
+  <script src="physics.js"></script>
+  <script src="tests.js"></script>
+  <script src="main.js"></script>
+  </body>
+  </html>
