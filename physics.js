@@ -34,7 +34,7 @@
    idle: 900,
    redline: 7500,
    torqueCurve: [[900, 150], [2000, 230], [3000, 290], [4000, 330], [4800, 350], [5600, 345], [6500, 320], [7200, 285], [7500, 260]],
-   brakeTorque: 5200,
+   brakeTorque: 6500,
    brakeBias: 0.62,
    maxSteer: 0.55,
    rollStiffFront: 0.55
@@ -108,7 +108,7 @@
    const s = Math.hypot(sx, sy);
    let f = 0;
    if (s > 1e-6) f = muEff * Fz * magic(s) / s;
-   if (s > 1.8) f *= 1 - 0.12 * Math.min(1, (s - 1.8) / 3);
+   if (s > 1.8) f *= 1 - 0.25 * Math.min(1, (s - 1.8) / 3);
    const dFdw = muEff * Fz * MAGIC_B * MAGIC_C / p.kappaPeak * R / vref;
    return { fx: f * sx, fy: -f * sy, kappa: kappa, tanA: tanA, dFdw: dFdw };
  }
