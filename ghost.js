@@ -67,6 +67,7 @@
  });
 
  window.GhostDraw = function (ctx) {
+   window.GhostPos = null;
    const S = window.RaceState;
    if (!S) return;
    sample(S);
@@ -83,6 +84,7 @@
    const x = d[k + 1] + (d[k + 5] - d[k + 1]) * f;
    const y = d[k + 2] + (d[k + 6] - d[k + 2]) * f;
    const psi = d[k + 3] + (d[k + 7] - d[k + 3]) * f;
+   window.GhostPos = { x: x, y: y, psi: psi };
    ctx.save();
    ctx.translate(x, y);
    ctx.rotate(psi);
