@@ -105,6 +105,7 @@
   const padPrev = {};
   const lap = { running: false, start: 0, cp: 1, valid: true, last: 0, best: 0, prevI: 0, n: 0, msg: "", msgUntil: 0 };
   window.RaceState = { car: car, lap: lap };
+  window.RaceTrack = { N: N, tx: tx, ty: ty, th: th, trk: trk };
   let offState = 0;
   try { lap.best = parseFloat(localStorage.getItem("carrace_best_c2")) || 0; } catch (e) { lap.best = 0; }
 
@@ -355,6 +356,7 @@
      ctx.restore();
    }
    ctx.restore();
+   if (window.CockpitView) window.CockpitView.draw(ctx, W, H);
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
    drawMap(W);
