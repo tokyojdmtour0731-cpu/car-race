@@ -117,7 +117,7 @@
  function step(car, inp, dt) {
    const p = car.p;
    const R = p.wheelR;
-   const v = Math.max(0, car.vx);
+   const v = car.rev ? Math.abs(car.vx) : Math.max(0, car.vx);
 
   // steering with rate limit
   const target = clamp(inp.steer, -1, 1) * steerMax(p, v);
@@ -130,7 +130,7 @@
    else if (p.drive === "AWD") axles = [[0, 1, 0.4], [2, 3, 0.6]];
    else axles = [[2, 3, 1.0]];
 
-  const gr = p.gears[car.gear - 1] * p.final;
+  const gr = p.gears[car.gear - 1] * p.final * (car.rev ? 1.25 : 1);
    let wSum = 0;
    let wCnt = 0;
    let kMax = 0;
@@ -142,7 +142,7 @@
        kMax = Math.max(kMax, car.kap[i]);
      }
    }
-   const wheelRpmEq = Math.max(0, wSum / wCnt) * gr * 60 / TWO_PI;
+   const wheelRpmEq = Math.abs(wSum / wCnt) * gr * 60 / TWO_PI;
 
   let throttle = clamp(inp.throttle, 0, 1);
    const brake = clamp(inp.brake, 0, 1);
@@ -150,7 +150,7 @@
    car.throttleEff = throttle;
 
   // automatic gearbox
-  if (car.auto && car.shiftTimer <= 0) {
+  if (car.auto && !car.rev && car.shiftTimer <= 0) {
     if (wheelRpmEq > 7100 && car.gear < p.gears.length) shift(car, 1);
     else if (car.gear > 1 && wheelRpmEq < 2700) shift(car, -1);
   }
@@ -165,7 +165,7 @@
      else Teng = throttle * lerpCurve(p.torqueCurve, rpmTq);
      if (throttle < 1 && wheelRpmEq > p.idle * 1.2) Teng -= (1 - throttle) * (25 + 0.016 * wheelRpmEq);
    }
-   const Twheels = Teng * gr * p.driveEff * 0.97;
+   const Twheels = Teng * gr * p.driveEff * 0.97 * (car.rev ? -1 : 1);
 
   // wheel drive torque with limited slip differential
   const drv = [0, 0, 0, 0];
@@ -231,7 +231,7 @@
      } else {
        wNew = w + dt * Tnet / den;
      }
-     car.omega[i] = Math.max(0, wNew);
+     car.omega[i] = car.rev ? Math.min(0, wNew) : Math.max(0, wNew);
 
    const fxb = tf.fx * cd - tf.fy * sd;
      const fyb = tf.fx * sd + tf.fy * cd;
