@@ -98,7 +98,7 @@
  const car = P.createCar(P.CAR_KAZE);
   car.auto = true;
   car.abs = true;
-  car.tc = false;
+  car.tc = true;
   const inp = { throttle: 0, brake: 0, steer: 0 };
   const keys = {};
   const marks = [];
