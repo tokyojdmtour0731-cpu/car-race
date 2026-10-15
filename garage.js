@@ -2,13 +2,14 @@
 // Car Race (Cycle 3): three fictional cars, upgrade parts, virtual coins (no real money). Runs before main.js.
 (function () {
   const P = window.CarPhysics;
-  if (!P || location.search.indexOf("test=1") >= 0) return;
+  if (!P) return;
   const base = Object.assign({}, P.CAR_KAZE);
   const CARS = [
     Object.assign({}, base, { name: "Kaze FR (fictional)" }),
     Object.assign({}, base, { name: "Raiden AWD (fictional)", mass: 1450, wheelbase: 2.65, frontWeight: 0.57, track: 1.55, hCg: 0.48, iz: 2900, cdA: 0.76, tireMu: 1.15, drive: "AWD", diffLock: 0.4, gears: [3.5, 2.1, 1.45, 1.1, 0.9, 0.74], final: 3.7, redline: 7200, torqueCurve: [[900, 160], [2000, 260], [3000, 400], [4000, 440], [5000, 430], [6000, 400], [6800, 350], [7200, 300]], brakeTorque: 6200, brakeBias: 0.64, rollStiffFront: 0.58 }),
     Object.assign({}, base, { name: "Tsubame FF (fictional)", mass: 1050, wheelbase: 2.45, frontWeight: 0.62, track: 1.45, hCg: 0.45, iz: 1700, cdA: 0.66, tireMu: 1.08, drive: "FWD", diffLock: 0.2, gears: [3.4, 2.1, 1.5, 1.18, 0.97, 0.82], final: 4.2, redline: 8200, torqueCurve: [[1000, 110], [2500, 160], [4000, 200], [5500, 235], [6500, 245], [7500, 230], [8200, 200]], brakeTorque: 4300, brakeBias: 0.68, rollStiffFront: 0.6 })
     ];
+  window.GarageCars = CARS; if (location.search.indexOf("test=1") >= 0) return;
   const KEY = "carrace_garage_c3";
   const MAXLV = 3;
   let st = { car: 0, coins: 0, up: [], best: {} };
