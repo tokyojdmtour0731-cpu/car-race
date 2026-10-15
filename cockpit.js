@@ -4,7 +4,7 @@
   const CV = { mode: 1 };
   window.CockpitView = CV;
   window.addEventListener("keydown", function (e) {
-    if (e.code === "KeyC" && !e.repeat) CV.mode = (CV.mode + 1) % 3;
+    if (e.code === "KeyB" && !e.repeat) CV.mode = (CV.mode + 1) % 3;
   });
   const HZ = [22, 30, 48];
   const AHEAD = 150;
@@ -99,7 +99,7 @@
       else if (fb < NEAR) s1 = (NEAR - fa) / (fb - fa);
       if (j % 4 === 0 && o > 2) {
         for (let sd = -1; sd <= 1; sd += 2) {
-          const off = 14 + hash(j * 2 + sd) * 40;
+          const off = 24 + hash(j * 2 + sd) * 40;
           const bw = 10 + hash(j + 7.3 + sd) * 18;
           const bh = 12 + hash(j + 3.1 + sd * 5) * 70;
           const bp = proj(T.tx[j] + NX[j] * off * sd, T.ty[j] + NY[j] * off * sd, 0);
@@ -116,7 +116,7 @@
             const rht = sh / rows;
             for (let r = 0; r < rows; r++) {
               for (let c = 0; c < cols; c++) {
-                if (hash(j * 131 + r * 17 + c * 3 + sd) > 0.6) ctx.fillRect(bp[0] - sw / 2 + c * cwd + cwd * 0.25, bp[1] - sh + r * rht + rht * 0.25, cwd * 0.5, rht * 0.45);
+                if (hash(j * 131 + r * 17 + c * 3 + sd) > 0.6) ctx.fillRect(bp[0] - sw / 2 + c * cwd + cwd * 0.35, bp[1] - sh + r * rht + rht * 0.35, cwd * 0.3, rht * 0.3);
               }
             }
           }
@@ -182,7 +182,7 @@
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.font = Math.round(H * 0.018) + "px monospace";
     ctx.textAlign = "right";
-    ctx.fillText("C: VIEW (" + ["TOP", "COCKPIT", "CHASE"][CV.mode] + ")", W - 12, H - 10);
+    ctx.fillText("B: VIEW (" + ["TOP", "COCKPIT", "CHASE"][CV.mode] + ")", W - 12, H - 70);
     ctx.textAlign = "left";
   };
   function dial(ctx, cx, cy, r, v, vmax, red) {
