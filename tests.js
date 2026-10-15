@@ -18,8 +18,8 @@
    return a;
  }
 
- function testAccel() {
-   const car = newCar(true);
+ function testAccel(ov) {
+   const car = newCar(true, ov);
    let t100 = NaN;
    let t200 = NaN;
    const n = Math.round(40 / P.DT);
@@ -32,8 +32,8 @@
    return { t100: t100, t200: t200 };
  }
 
- function testTopSpeed() {
-   const car = newCar(true);
+ function testTopSpeed(ov) {
+   const car = newCar(true, ov);
    const n = Math.round(240 / P.DT);
    const mark = n - Math.round(10 / P.DT);
    let vMark = 0;
@@ -61,9 +61,9 @@
    return car.x - x0;
  }
 
- function testSkidpad() {
+ function testSkidpad(ov) {
    const R0 = 50;
-   const car = newCar(false);
+   const car = newCar(false, ov);
    car.vx = 12;
    car.gear = 3;
    for (let i = 0; i < 4; i++) car.omega[i] = 12 / car.p.wheelR;
@@ -121,6 +121,7 @@
    add("Standstill drift in 5 s", testIdle(), "m", 0, 0.05);
    const gc = root.GarageCars || [];
    for (let ci = 1; ci < gc.length; ci++) { add("Car " + ci + " " + gc[ci].name + " 100-0 braking (ABS on)", brakeRun(true, gc[ci]), "m", 30, 48); add("Car " + ci + " 100-0 braking (ABS off, info)", brakeRun(false, gc[ci]), "m", 30, 70); }
+   for (let cj = 1; cj < gc.length; cj++) { const ac = testAccel(gc[cj]); const tp = testTopSpeed(gc[cj]); const sk = testSkidpad(gc[cj]); add("Car " + cj + " 0-100 km/h", ac.t100, "s", 3, 9); add("Car " + cj + " 0-200 km/h", ac.t200, "s", 8, 40); add("Car " + cj + " top speed", tp.vmax, "km/h", 180, 320); add("Car " + cj + " max lateral G", sk.maxG, "g", 0.8, 1.4); add("Car " + cj + " skidpad limit speed", sk.lostSpeed, "km/h", 40, 130); }
    return out;
  }
 
